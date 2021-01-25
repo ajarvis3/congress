@@ -1,0 +1,2 @@
+com/example/mongo_endpoint/DemoApplicationTests.java
+ com.example.mongo_endpoint.DemoApplicationTests
