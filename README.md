@@ -11,7 +11,8 @@ writes it to Mongodb. Run locally and manually since
 Senate.gov didn't like when it was hosted.
 
 # Population
-Front end portion.
+Front end portion. Hosted at
+https://ajarvis3.github.io/congress/
 
 # Mongo Endpoint
 Used to access mongo data since Node is limited or something
