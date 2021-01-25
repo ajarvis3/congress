@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.bson.Document;
 
@@ -28,6 +29,7 @@ import com.mongodb.client.MongoCursor;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
 public class DemoApplication {
 
+	@CrossOrigin
 	@GetMapping("/")
 	@ResponseBody
 	public Senator[] senate() {
