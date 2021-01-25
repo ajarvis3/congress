@@ -7,8 +7,8 @@ function State(props) {
     return (<tr>
         <td>{name}</td>
         <td>{pop}</td>
-        <td>{sen1}</td>
-        <td>{sen2}</td>
+        <td>{sen1 ? sen1.name : ""}</td>
+        <td>{sen2 ? sen2.name : ""}</td>
     </tr>)
 }
 
@@ -32,11 +32,13 @@ function Population() {
             });
             data = data.map((value) => {
                 return {
-                    state: value[1],
-                    pop: value[0]
+                    state: value[0],
+                    pop: value[1],
+                    key: value[2]
                 }
             });
             setData(data);
+            setFullData(data);
         });
     }, []);
 
@@ -49,7 +51,6 @@ function Population() {
             let data = accept.json();
             return data;
         }).then((senate) => {
-            console.log(senate);
             senate.sort((a, b) => {
                 return a.state.localeCompare(b.state);
             });
@@ -58,7 +59,8 @@ function Population() {
                     state: value.state,
                     pop: value.pop,
                     sen1: senate[index * 2],
-                    sen2: senate[index * 2 + 1]
+                    sen2: senate[index * 2 + 1],
+                    key: value.key
                 }
             });
             setFullData(tempData);
@@ -71,7 +73,7 @@ function Population() {
                     pop={value.pop} 
                     sen1={value.sen1}
                     sen2={value.sen2}
-                    key={value[2]} />
+                    key={value.key} />
     });
     return <div>
         <table>
