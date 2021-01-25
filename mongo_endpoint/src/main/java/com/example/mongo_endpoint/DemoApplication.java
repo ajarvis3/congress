@@ -43,15 +43,12 @@ public class DemoApplication {
         MongoDatabase database = mongoClient.getDatabase(MONGO_DB);  
 
 		MongoCollection<Document> senate = database.getCollection(collection); 
-		System.out.println(senate.countDocuments());
 		FindIterable<Document> senators = senate.find();
-		System.out.println(senators);
-		System.out.println(senators.first());
-		System.out.println(senators);
-		System.out.println("ASDASDASDASDASDASDDSA");
 		List<Senator> res = new ArrayList<>();
-        for (Document s: senators) {
-            res.add(Senator.getFromDocument(s));
+		try (MongoCursor<Document> cursor = senators.iterator()) {
+			while (cursor.hasNext()) {
+				res.add(Senator.getFromDocument(cursor.next()));
+			}
 		}
 		Senator[] result = new Senator[res.size()];
 		return res.toArray(result);

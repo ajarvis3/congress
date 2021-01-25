@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import './Population.css';
-import {POPULATION_API, MONGO_CONNECTION_STRING, MONGO_DB} from './Constants';
-import {MongoClient} from 'mongodb';
+import {POPULATION_API, SENATE_API, NON_STATES} from './Constants';
 
 function State(props) {
-    const {name, pop} = props;
+    const {name, pop, sen1, sen2} = props;
     return (<tr>
         <td>{name}</td>
         <td>{pop}</td>
+        <td>{sen1}</td>
+        <td>{sen2}</td>
     </tr>)
 }
 
 function Population() {
     const [data, setData] = useState([]);
     const [fullData, setFullData] = useState([]);
-    const client = new MongoClient(MONGO_CONNECTION_STRING, {useNewUrlParser: true});
 
     // Get Population Data
     useEffect(() => {
@@ -22,33 +22,56 @@ function Population() {
             let data = accept.json();
             return data;
         }).then((data) => {
+            data = data.filter((value) => {
+                const state = value[0];
+                const res = !NON_STATES.includes(state);
+                return res;
+            });
+            data.sort((a, b) => {
+                return a[0].localeCompare(b[0]);
+            });
+            data = data.map((value) => {
+                return {
+                    state: value[1],
+                    pop: value[0]
+                }
+            });
             setData(data);
         });
     }, []);
 
     // Get Senators?
     useEffect(() => {
-        console.log(MONGO_CONNECTION_STRING);
-        console.log(client.connect);
-        client.connect(err => {
-            const collection = client.db(MONGO_DB).collection("senate");
-            console.log(
-                collection.find({state: "New York"})
-            );
-            const tempData = data.map((value) => {
+        if (data.length === 0) {
+            return;
+        }
+        fetch(SENATE_API).then((accept) => {
+            let data = accept.json();
+            return data;
+        }).then((senate) => {
+            console.log(senate);
+            senate.sort((a, b) => {
+                return a.state.localeCompare(b.state);
+            });
+            const tempData = data.map((value, index) => {
                 return {
-                    name: value[0],
-                    pop: value[1],
-                    senators: collection.find({state: value[0]})
-                };
+                    state: value.state,
+                    pop: value.pop,
+                    sen1: senate[index * 2],
+                    sen2: senate[index * 2 + 1]
+                }
             });
             setFullData(tempData);
-            client.close();
-        })
+        });
     }, [data])
 
-    const states = data.slice(1).map((value) => {
-        return <State name={value[0]} pop={value[1]} key={value[2]} />
+    const states = fullData.map((value) => {
+        return <State 
+                    name={value.state} 
+                    pop={value.pop} 
+                    sen1={value.sen1}
+                    sen2={value.sen2}
+                    key={value[2]} />
     });
     return <div>
         <table>
@@ -59,6 +82,12 @@ function Population() {
                     </th>
                     <th>
                         Population
+                    </th>
+                    <th>
+                        Senator 1
+                    </th>
+                    <th>
+                        Senator 2
                     </th>
                 </tr>
             </thead>
