@@ -3,10 +3,11 @@ import './Population.css';
 import {POPULATION_API, SENATE_API, NON_STATES} from './Constants';
 
 function State(props) {
-    const {name, pop, sen1, sen2} = props;
+    const {name, pop, rel, sen1, sen2} = props;
     return (<tr>
         <td>{name}</td>
         <td>{pop}</td>
+        <th>{rel.toFixed(2)}</th>
         <td>{sen1 ? sen1.name : ""}</td>
         <td>{sen2 ? sen2.name : ""}</td>
     </tr>)
@@ -67,12 +68,19 @@ function Population() {
         });
     }, [data])
 
+    const sum = fullData.length === 0 ? 0 :
+                    fullData.reduce((sum, val) => {
+                        console.log(sum, val);
+                        sum += parseInt(val.pop);
+                        return sum;
+                    }, 0) / 50;
     const states = fullData.map((value) => {
         return <State 
                     name={value.state} 
                     pop={value.pop} 
                     sen1={value.sen1}
                     sen2={value.sen2}
+                    rel={sum/parseInt(value.pop)}
                     key={value.key} />
     });
     return <div>
@@ -84,6 +92,9 @@ function Population() {
                     </th>
                     <th>
                         Population
+                    </th>
+                    <th>
+                        Relative Pop.
                     </th>
                     <th>
                         Senator 1
